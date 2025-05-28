@@ -1,7 +1,8 @@
 require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
-const app = express();
+const http = require('http');
+const { setupSocket } = require('./socket');
 const cookieParser = require('cookie-parser');
 const rateLimiter = require('express-rate-limit');
 const helmet = require('helmet');
@@ -14,7 +15,6 @@ const swaggerSpec = require('./swagger');
 // database
 const connectDB = require('./db/connect');
 
-
 //  routers
 const authRouter = require('./routes/auth.route');
 const userRouter = require('./routes/user.route');
@@ -25,6 +25,18 @@ const commentRouter = require('./routes/comment.route');
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
+const app = express();
+
+// Create HTTP server and attach Socket.IO
+const server = http.createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+
+// Security & utils
 app.set('trust proxy', 1);
 app.use(
   rateLimiter({
@@ -36,10 +48,10 @@ app.use(helmet());
 app.use(cors());
 app.use(xss());
 app.use(mongoSanitize());
-
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 
+// Routes
 app.get('/', (req, res) => {
   res.send('<h1>Blog API</h1><a href="/api-docs">Documentation</a>');
 });
@@ -48,22 +60,25 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/articles', articleRouter);
 app.use('/api/v1/comments', commentRouter);
 
-// Swagger UI
+// Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Error handling
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-const port = process.env.PORT || 5001;
+// Start the server
+const port = process.env.PORT || 5000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URL);
-    app.listen(port, () =>
-      console.log(`Server is listening on port ${port}...`)
-    );
+    server.listen(port, () => {
+      setupSocket(io);
+      console.log(`🟢 Server listening on port ${port}...`);
+    });
   } catch (error) {
-    console.log(error);
-  }
+  console.log('❌ Failed to start server:', error);
+}
 };
 
 start();
