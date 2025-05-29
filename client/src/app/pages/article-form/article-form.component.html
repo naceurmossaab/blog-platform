@@ -1,0 +1,27 @@
+<h2>{{ isEdit ? 'Modifier un article' : 'Créer un article' }}</h2>
+
+<form class="article-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Titre</mat-label>
+    <input matInput formControlName="title" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Contenu</mat-label>
+    <textarea matInput rows="6" formControlName="content"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Tags (séparés par virgule)</mat-label>
+    <input matInput formControlName="tags" />
+  </mat-form-field>
+
+  <mat-checkbox formControlName="published">Publié</mat-checkbox>
+
+  <div style="margin-top: 1rem;">
+    <button mat-raised-button color="primary" type="submit">
+      {{ isEdit ? 'Mettre à jour' : 'Créer' }}
+    </button>
+    <button mat-button type="button" routerLink="/articles">Annuler</button>
+  </div>
+</form>
