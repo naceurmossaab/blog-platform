@@ -6,7 +6,8 @@ const { authenticateUser } = require('../middleware/authentication');
 const {
   register,
   login,
-  logout
+  logout,
+  showCurrentUser
 } = require('../controllers/auth.controller');
 const validate = require('../middleware/validationMiddleware');
 const { registerSchema, loginSchema } = require('../validators/auth.validator');
@@ -76,6 +77,22 @@ router.post('/register', validate(registerSchema), register);
  *         description: Unauthorized
  */
 router.post('/login', validate(loginSchema) ,login);
+
+/**
+ * @swagger
+ * /api/v1/auth/showMe:
+ *   get:
+ *     summary: Show current logged-in user's info
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user info
+ *       401:
+ *         description: Unauthorized
+ */
+router.route('/showMe').get(authenticateUser, showCurrentUser);
 
 /**
  * @swagger

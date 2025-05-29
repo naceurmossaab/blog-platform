@@ -1,0 +1,11 @@
+<mat-toolbar color="primary">
+  <span style="margin-inline: 10px;">Article Platform</span>
+  <button mat-button routerLink="/products">Articles</button>
+
+  <span class="spacer"></span>
+
+  <ng-container *ngIf="authUser">
+    <button mat-button (click)="logout()"> {{authUser.name}} | Logout</button>
+  </ng-container>
+  <button mat-button routerLink="/auth/login" *ngIf="!authUser">Login</button>
+</mat-toolbar>

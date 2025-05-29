@@ -7,7 +7,6 @@ const {
 const {
   getAllUsers,
   getSingleUser,
-  showCurrentUser,
   updateUser,
   updateUserPassword,
 } = require('../controllers/user.controller');
@@ -40,22 +39,6 @@ const { updateUserSchema, updatePasswordSchema } = require('../validators/user.v
 router
   .route('/')
   .get(authenticateUser, authorizePermissions('admin'), getAllUsers);
-
-/**
- * @swagger
- * /api/v1/users/showMe:
- *   get:
- *     summary: Show current logged-in user's info
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Current user info
- *       401:
- *         description: Unauthorized
- */
-router.route('/showMe').get(authenticateUser, showCurrentUser);
 
 /**
  * @swagger

@@ -4,7 +4,8 @@ const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const {
   attachCookiesToResponse,
-  createTokenUser
+  createTokenUser,
+  createJWT
 } = require('../utils');
 const crypto = require('crypto');
 
@@ -49,7 +50,8 @@ const login = async (req, res) => {
   }
   const tokenUser = createTokenUser(user);
 
-  // create refresh token
+  // create refresh token and access token
+  const accessToken = createJWT({ payload: { user: tokenUser } }, process.env.ACCESS_TOKEN_LIFETIME);
   let refreshToken = '';
   // check for existing token
   const existingToken = await Token.findOne({ user: user._id });
@@ -59,7 +61,7 @@ const login = async (req, res) => {
     if (!isValid) throw new CustomError.UnauthenticatedError('Invalid Credentials');
     refreshToken = existingToken.refreshToken;
     attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-    res.status(StatusCodes.OK).json({ user: tokenUser });
+    res.status(StatusCodes.OK).json({ user: tokenUser, accessToken });
     return;
   }
 
@@ -75,13 +77,12 @@ const login = async (req, res) => {
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
+const showCurrentUser = async (req, res) => {
+  res.status(StatusCodes.OK).json({ user: req.user });
+};
+
 const logout = async (req, res) => {
   await Token.findOneAndDelete({ user: req.user.userId });
-
-  res.cookie('accessToken', 'logout', {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
 
   res.cookie('refreshToken', 'logout', {
     httpOnly: true,
@@ -94,5 +95,6 @@ const logout = async (req, res) => {
 module.exports = {
   register,
   login,
+  showCurrentUser,
   logout
 };
