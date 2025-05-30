@@ -37,14 +37,14 @@ const io = require('socket.io')(server, {
   }
 });
 
-// Security & utils
-// app.set('trust proxy', 1);
-// app.use(
-//   rateLimiter({
-//     windowMs: 15 * 60 * 1000,
-//     max: 60,
-//   })
-// );
+Security & utils
+app.set('trust proxy', 1);
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 60,
+  })
+);
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(xss());
