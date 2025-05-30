@@ -1,9 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommentService } from '../../services/comment.service';
 import { CommentFormComponent } from '../../components/comment-form/comment-form.component';
+import { AuthUser } from '../../models/auth';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-comments',
@@ -22,9 +24,18 @@ export class CommentsComponent {
   @Input() articleId!: string;
   @Output() refresh = new EventEmitter<void>();
 
+  private authService = inject(AuthService);
+  private commentService = inject(CommentService);
+
+  authUser?: AuthUser;
   replyingTo: string | null = null;
 
-  constructor(private commentService: CommentService) { }
+  ngOnInit() {
+    if (!this.authUser)
+      this.authService.authUser$.subscribe(user => {
+        this.authUser = user
+      });
+  }
 
   showReplyForm(commentId: string) {
     this.replyingTo = commentId;
@@ -40,8 +51,7 @@ export class CommentsComponent {
   }
 
   canDelete(comment: any): boolean {
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    return user && (user.role === 'admin' || user._id === comment.author?._id);
+    return !!this.authUser && (this.authUser.role === 'admin' || this.authUser._id === comment.author?._id);
   }
 
   onDelete(id: string) {
