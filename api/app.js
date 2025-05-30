@@ -5,6 +5,7 @@ const http = require('http');
 const { setupSocket } = require('./socket');
 const cookieParser = require('cookie-parser');
 const rateLimiter = require('express-rate-limit');
+const fileUpload = require('express-fileupload');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const cors = require('cors');
@@ -37,19 +38,22 @@ const io = require('socket.io')(server, {
 });
 
 // Security & utils
-app.set('trust proxy', 1);
-app.use(
-  rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 60,
-  })
-);
+// app.set('trust proxy', 1);
+// app.use(
+//   rateLimiter({
+//     windowMs: 15 * 60 * 1000,
+//     max: 60,
+//   })
+// );
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(xss());
 app.use(mongoSanitize());
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
+
+app.use(express.static('./public'));
+app.use(fileUpload());
 
 // Routes
 app.get('/', (req, res) => {

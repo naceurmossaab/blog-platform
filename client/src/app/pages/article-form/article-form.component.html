@@ -6,6 +6,10 @@
     <input matInput formControlName="title" />
   </mat-form-field>
 
+  <input type="file" (change)="onFileChange($event)" />
+  <img *ngIf="imagePreview" [src]="imagePreview" alt="Aperçu de l'image"
+    style="max-width: 100%; margin-top: 1rem; border-radius: 8px;" />
+
   <mat-form-field appearance="outline" class="w-full">
     <mat-label>Contenu</mat-label>
     <textarea matInput rows="6" formControlName="content"></textarea>

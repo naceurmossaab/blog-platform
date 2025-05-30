@@ -31,12 +31,14 @@ export class ArticleFormComponent implements OnInit {
 
   isEdit = false;
   articleId: string | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
   form = this.fb.group({
     title: ['', Validators.required],
     content: ['', Validators.required],
     tags: [''],
-    published: [false]
+    published: [false],
+    image: [null as File | null]  // Ajout du champ image
   });
 
   ngOnInit(): void {
@@ -51,6 +53,7 @@ export class ArticleFormComponent implements OnInit {
             content: res.article.content,
             tags: res.article.tags?.join(', ') || '',
             published: res.article.published
+            // On ne patch pas l'image, car c’est un fichier
           });
         },
         error: err => {
@@ -61,17 +64,44 @@ export class ArticleFormComponent implements OnInit {
     }
   }
 
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.form.patchValue({ image: file });
+      this.form.get('image')?.updateValueAndValidity();
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+
   onSubmit(): void {
     if (this.form.invalid) return;
 
-    const data = {
-      ...this.form.value,
-      tags: this.form.value.tags?.split(',').map(tag => tag.trim())
-    };
+    const formData = new FormData();
+
+    formData.append('title', this.form.value.title!);
+    formData.append('content', this.form.value.content!);
+    formData.append('published', this.form.value.published ? 'true' : 'false');
+
+    if (this.form.value.tags) {
+      const tagsArray = this.form.value.tags.split(',').map((tag: string) => tag.trim());
+      formData.append('tags', JSON.stringify(tagsArray));
+    }
+
+    if (this.form.value.image) {
+      formData.append('image', this.form.value.image);
+    }
 
     const req = this.isEdit && this.articleId
-      ? this.articleService.update(this.articleId, data)
-      : this.articleService.create(data);
+      ? this.articleService.update(this.articleId, formData)
+      : this.articleService.create(formData);
 
     req.subscribe({
       next: () => this.router.navigate(['/articles']),

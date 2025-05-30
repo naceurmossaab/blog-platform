@@ -7,6 +7,7 @@ export interface Author {
 export interface Article {
   _id: string;
   title: string;
+  image?: string; // URL de l'image, si disponible
   content: string;
   author: Author;
   tags: string[];

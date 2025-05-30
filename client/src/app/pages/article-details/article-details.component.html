@@ -2,9 +2,12 @@
   <div style="margin-top: 1rem;">
     <mat-card-title>{{ article.title }}</mat-card-title>
     <mat-card-subtitle>
-      Par {{ article.author?.name || 'Inconnu' }} –
+      Par {{ article.author.name }} –
       {{ article.createdAt | date:'medium' }}
     </mat-card-subtitle>
+    <br>
+    <img *ngIf="imageUrl" [src]="imageUrl" alt="Image de l'article" style="max-width: 100%; margin-top: 1rem; border-radius: 8px" />
+    <br>
     <mat-card-content style="margin-top: 1rem;">
       <p>{{ article.content }}</p>
 
@@ -15,9 +18,9 @@
   </div>
 
   <!-- Section commentaires -->
-  
+
   <app-comment-form [articleId]="article._id" (submitted)="reloadComments()"></app-comment-form>
-  
+
   <app-comments *ngIf="comments?.length" [comments]="comments" [articleId]="article._id"
     (refresh)="reloadComments()"></app-comments>
 

@@ -8,15 +8,11 @@ const ArticleSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 100,
     },
+    image: { type: String },
     content: {
       type: String,
       required: [true, 'Please provide content'],
       minlength: 10,
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
     },
     tags: {
       type: [String],
@@ -25,6 +21,11 @@ const ArticleSchema = new mongoose.Schema(
     published: {
       type: Boolean,
       default: false,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
   },
   { timestamps: true }

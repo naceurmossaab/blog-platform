@@ -7,11 +7,12 @@ import { Router, RouterModule } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Article } from '../../models/article';
+import { HasRoleDirective } from '../../shared/has-role.directive';
 
 @Component({
   standalone: true,
   selector: 'app-articles',
-  imports: [CommonModule, RouterModule, MatTableModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatTableModule, MatButtonModule, MatIconModule, HasRoleDirective],
   templateUrl: './articles.component.html',
 })
 export class ArticlesComponent implements OnInit {

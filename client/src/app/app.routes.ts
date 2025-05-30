@@ -12,6 +12,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'articles', pathMatch: 'full' },
       {
         path: 'articles',
+        canActivate: [AuthGuard],
         children: [
           { path: '', loadComponent: () => import('./pages/articles/articles.component').then(m => m.ArticlesComponent) },
           { path: 'new', loadComponent: () => import('./pages/article-form/article-form.component').then(m => m.ArticleFormComponent) },

@@ -7,6 +7,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { CommentsComponent } from '../comments/comments.component';
 import { CommentService } from '../../services/comment.service';
 import { CommentFormComponent } from '../../components/comment-form/comment-form.component';
+import { environment } from '../../../environments/environment.development';
+import { Article } from '../../models/article';
 
 @Component({
   standalone: true,
@@ -19,8 +21,9 @@ export class ArticleDetailsComponent implements OnInit {
   private articleService = inject(ArticleService);
   private commentService = inject(CommentService);
 
-  article: any = null;
+  article?: Article;
   comments: any[] = [];
+  apiUrl = environment.apiUrl.replace('/api/v1/', '');
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -35,11 +38,17 @@ export class ArticleDetailsComponent implements OnInit {
         console.error('Erreur lors du chargement de l’article', err);
       }
     });
+  }
 
+  get imageUrl(): string | null {
+    if (!this.article?.image) return null;
+    return encodeURI(this.apiUrl + this.article.image);
   }
 
   reloadComments(id?: string) {
-    this.commentService.getCommentsByArticle(this.article._id || id).subscribe((res: any) => {
+    const articleId = this.article?._id ?? id;
+    if (!articleId) return;
+    this.commentService.getCommentsByArticle(articleId).subscribe((res: any) => {
       this.comments = res.comments;
     });
   }

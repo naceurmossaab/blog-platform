@@ -65,4 +65,10 @@ export class AuthService {
         })
       );
   }
+
+  hasRole(role: string | string[]): boolean {
+    if (!this.userSubject.value) return false;
+    if (Array.isArray(role)) return role.includes(this.userSubject.value.role);
+    return this.userSubject.value.role === role;
+  }
 }
