@@ -9,7 +9,7 @@ const {
   deleteArticle,
 } = require('../controllers/article.controller');
 
-const { authenticateUser } = require('../middleware/authentication');
+const { authenticateUser, authorizePermissions } = require('../middleware/authentication');
 const validate = require('../middleware/validationMiddleware');
 const {
   createArticleSchema,
@@ -169,6 +169,6 @@ router.patch('/:id', authenticateUser, validate(updateArticleSchema), updateArti
  *       404:
  *         description: Article not found
  */
-router.delete('/:id', authenticateUser, deleteArticle);
+router.delete('/:id', [authenticateUser, authorizePermissions('admin')], deleteArticle);
 
 module.exports = router;

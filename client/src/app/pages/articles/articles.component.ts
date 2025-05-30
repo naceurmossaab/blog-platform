@@ -8,6 +8,8 @@ import { ArticleService } from '../../services/article.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Article } from '../../models/article';
 import { HasRoleDirective } from '../../shared/has-role.directive';
+import { AuthUser } from '../../models/auth';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   standalone: true,
@@ -16,13 +18,20 @@ import { HasRoleDirective } from '../../shared/has-role.directive';
   templateUrl: './articles.component.html',
 })
 export class ArticlesComponent implements OnInit {
+  private authService = inject(AuthService);
   private articleService = inject(ArticleService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+
+  authUser?: AuthUser;
   articles: Article[] = [];
   displayedColumns: string[] = ['title', 'author', 'date', 'actions'];
 
   ngOnInit(): void {
+    this.authService.authUser$.subscribe(user => {
+      this.authUser = user
+    });
+
     this.articleService.getAll().subscribe({
       next: (res) => {
         this.articles = res.articles;
@@ -53,5 +62,9 @@ export class ArticlesComponent implements OnInit {
         this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
       }
     });
+  }
+
+  isAuthor(authorId: string): string {
+    return authorId === this.authUser?.userId ? 'user' : '';
   }
 }

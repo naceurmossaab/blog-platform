@@ -32,7 +32,7 @@
       <button mat-icon-button (click)="view(article._id)" matTooltip="Voir">
         <mat-icon>visibility</mat-icon>
       </button>
-      <button mat-icon-button (click)="edit(article._id)" matTooltip="Modifier">
+      <button mat-icon-button *appHasRole="['admin', 'editor', isAuthor(article.author._id)]" (click)="edit(article._id)" matTooltip="Modifier">
         <mat-icon>edit</mat-icon>
       </button>
       <button mat-icon-button *appHasRole="['admin']" (click)="delete(article._id)" matTooltip="Supprimer">
