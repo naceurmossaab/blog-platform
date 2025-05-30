@@ -51,7 +51,7 @@ export class CommentsComponent {
   }
 
   canDelete(comment: any): boolean {
-    return !!this.authUser && (this.authUser.role === 'admin' || this.authUser._id === comment.author?._id);
+    return !!this.authUser && (this.authUser.role === 'admin' || this.authUser.userId === comment.author?._id);
   }
 
   onDelete(id: string) {

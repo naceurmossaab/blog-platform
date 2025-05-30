@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NgIf } from '@angular/common';
@@ -18,7 +18,7 @@ import { AuthUser } from '../../models/auth';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   authUser?: AuthUser;
 
   constructor(public authService: AuthService) {
@@ -26,10 +26,6 @@ export class NavbarComponent implements OnInit {
       this.authService.authUser$.subscribe(user => {
         this.authUser = user
       });
-  }
-
-  ngOnInit(): void {
-    this.authService.isUserLoggedIn();
   }
 
   logout() {

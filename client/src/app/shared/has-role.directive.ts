@@ -13,7 +13,6 @@ export class HasRoleDirective {
   ) { }
 
   @Input() set appHasRole(roles: string[]) {
-    this.auth.authUser$.subscribe(user => console.log('Current login user:', user));
     if (this.auth.hasRole(roles)) {
       this.vcr.createEmbeddedView(this.templateRef);
     } else {
