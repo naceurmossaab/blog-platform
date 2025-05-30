@@ -1,5 +1,5 @@
 <ng-container *ngIf="article; else loading">
-  <mat-card class="mat-elevation-z3" style="margin-top: 1rem;">
+  <div style="margin-top: 1rem;">
     <mat-card-title>{{ article.title }}</mat-card-title>
     <mat-card-subtitle>
       Par {{ article.author?.name || 'Inconnu' }} –
@@ -12,9 +12,15 @@
         <mat-chip *ngFor="let tag of article.tags">{{ tag }}</mat-chip>
       </mat-chip-set>
     </mat-card-content>
-  </mat-card>
+  </div>
 
-  <!-- 💬 Section commentaires (à venir) -->
+  <!-- Section commentaires -->
+  
+  <app-comment-form [articleId]="article._id" (submitted)="reloadComments()"></app-comment-form>
+  
+  <app-comments *ngIf="comments?.length" [comments]="comments" [articleId]="article._id"
+    (refresh)="reloadComments()"></app-comments>
+
 </ng-container>
 
 <ng-template #loading>

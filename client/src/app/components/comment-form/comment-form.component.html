@@ -1,0 +1,16 @@
+<form class="comment-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="outline" style="width: 100%;">
+    <mat-label>{{ parent ? 'Répondre à un commentaire' : 'Ajouter un commentaire' }}</mat-label>
+    <textarea class="comment-textarea" matInput rows="1" formControlName="content"></textarea>
+  </mat-form-field>
+
+  <div class="comment-form-actions">
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      {{ parent ? 'Répondre' : 'Commenter' }}
+    </button>
+
+    <button *ngIf="parent" mat-button type="button" (click)="cancelReply()">
+      Annuler
+    </button>
+  </div>
+</form>
